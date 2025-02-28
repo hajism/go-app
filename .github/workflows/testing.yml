@@ -34,11 +34,12 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push testing/welcome:latest
-          docker push testing/welcome:${{ env.RELEASE_TAG }}
+          docker push hajism/testingwelcome:latest
+          docker push hajism/testingwelcome:${{ env.RELEASE_TAG }}
 
   deploy_to_vm:
     needs: build_and_push
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.deploy_vm == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to VM
@@ -49,7 +50,18 @@ jobs:
           key: ${{ secrets.VM_PRIVATE_KEY }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            docker pull testing/welcome:latest
+            docker pull hajism/testingwelcome:latest
             docker stop welcome-container || true
             docker rm welcome-container || true
             docker run -d -p 8000:5000 --name welcome-container testing/welcome:latest
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_vm:
+        description: 'Deploy ke VM?'
+        required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'

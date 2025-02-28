@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: welcome-container-deployment
+  labels:
+    app: welcome-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: welcome-container
+  template:
+    metadata:
+      labels:
+        app: welcome-container
+    spec:
+      containers:
+        - name: welcome-container
+          image: hajism/testingwelcome
+          ports:
+            - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: go-app-config
+            - secretRef:
+                name: goapp-db-credentials

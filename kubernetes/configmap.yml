@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: go-app-config
+data:
+  APP_NAME: "My Go App"
+  APP_VERSION: "1.2.3"
