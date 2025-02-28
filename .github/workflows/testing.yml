@@ -11,6 +11,13 @@ on:
         description: 'Branch yang akan di-build dan di-deploy'
         required: true
         type: string
+      deploy_vm:
+        description: 'Deploy ke VM?'
+        required: true
+        type: choice
+        options:
+          - 'true'
+          - 'false'
 
 jobs:
   build_and_push:
