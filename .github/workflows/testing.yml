@@ -61,14 +61,3 @@ jobs:
             docker stop welcome-container || true
             docker rm welcome-container || true
             docker run -d -p 8000:5000 --name welcome-container testing/welcome:latest
-
-on:
-  workflow_dispatch:
-    inputs:
-      deploy_vm:
-        description: 'Deploy ke VM?'
-        required: true
-        type: choice
-        options:
-          - 'true'
-          - 'false'
