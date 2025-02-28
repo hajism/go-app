@@ -21,4 +21,4 @@ helm install cert-manager jetstack/cert-manager \
 ```
 
 --
-![Diagram] (https://github.com/hajism/go-app/Architecture.png)
+![Diagram] ([https://github.com/hajism/go-app/Architecture.png](https://github.com/hajism/go-app/blob/main/Architecture.png))
