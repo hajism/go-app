@@ -37,7 +37,7 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t testing/welcome:latest -t testing/welcome:${{ env.RELEASE_TAG }} .
+          docker build -t hajism/testingwelcome:latest -t hajism/testingwelcome:${{ env.RELEASE_TAG }} .
 
       - name: Push Docker Image
         run: |
