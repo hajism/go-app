@@ -1,0 +1,55 @@
+name: Build and Deploy Docker Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag Rilis'
+        required: true
+        type: string
+      branch:
+        description: 'Branch yang akan di-build dan di-deploy'
+        required: true
+        type: string
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Set Release Tag
+        id: set_tag
+        run: echo "RELEASE_TAG=${{ github.event.inputs.release_tag }}" >> $GITHUB_ENV
+
+      - name: Login to Docker Registry
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t testing/welcome:latest -t testing/welcome:${{ env.RELEASE_TAG }} .
+
+      - name: Push Docker Image
+        run: |
+          docker push testing/welcome:latest
+          docker push testing/welcome:${{ env.RELEASE_TAG }}
+
+  deploy_to_vm:
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_PRIVATE_KEY }}
+          script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            docker pull testing/welcome:latest
+            docker stop welcome-container || true
+            docker rm welcome-container || true
+            docker run -d -p 8000:5000 --name welcome-container testing/welcome:latest
